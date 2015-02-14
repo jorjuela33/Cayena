@@ -9,7 +9,11 @@
 /* Begin PBXBuildFile section */
 		F8A545CF1A8F350200D59617 /* Cayena.h in Headers */ = {isa = PBXBuildFile; fileRef = F8A545CE1A8F350200D59617 /* Cayena.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F8A545D51A8F350200D59617 /* Cayena.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8A545C91A8F350200D59617 /* Cayena.framework */; };
-		F8A545DC1A8F350200D59617 /* CayenaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A545DB1A8F350200D59617 /* CayenaTests.swift */; };
+		F8A545E61A8F354D00D59617 /* Cayena.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A545E51A8F354D00D59617 /* Cayena.swift */; };
+		F8A545E71A8F355100D59617 /* Cayena.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A545E51A8F354D00D59617 /* Cayena.swift */; };
+		F8A545EB1A8F355A00D59617 /* ManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A545E81A8F355A00D59617 /* ManagerTests.swift */; };
+		F8A545EC1A8F355A00D59617 /* ParametersEncodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A545E91A8F355A00D59617 /* ParametersEncodingTests.swift */; };
+		F8A545ED1A8F355A00D59617 /* TaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A545EA1A8F355A00D59617 /* TaskTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,7 +32,10 @@
 		F8A545CE1A8F350200D59617 /* Cayena.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cayena.h; sourceTree = "<group>"; };
 		F8A545D41A8F350200D59617 /* CayenaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CayenaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8A545DA1A8F350200D59617 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F8A545DB1A8F350200D59617 /* CayenaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CayenaTests.swift; sourceTree = "<group>"; };
+		F8A545E51A8F354D00D59617 /* Cayena.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cayena.swift; sourceTree = "<group>"; };
+		F8A545E81A8F355A00D59617 /* ManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagerTests.swift; sourceTree = "<group>"; };
+		F8A545E91A8F355A00D59617 /* ParametersEncodingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParametersEncodingTests.swift; sourceTree = "<group>"; };
+		F8A545EA1A8F355A00D59617 /* TaskTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +78,7 @@
 		F8A545CB1A8F350200D59617 /* Cayena */ = {
 			isa = PBXGroup;
 			children = (
+				F8A545E51A8F354D00D59617 /* Cayena.swift */,
 				F8A545CE1A8F350200D59617 /* Cayena.h */,
 				F8A545CC1A8F350200D59617 /* Supporting Files */,
 			);
@@ -88,7 +96,9 @@
 		F8A545D81A8F350200D59617 /* CayenaTests */ = {
 			isa = PBXGroup;
 			children = (
-				F8A545DB1A8F350200D59617 /* CayenaTests.swift */,
+				F8A545E81A8F355A00D59617 /* ManagerTests.swift */,
+				F8A545E91A8F355A00D59617 /* ParametersEncodingTests.swift */,
+				F8A545EA1A8F355A00D59617 /* TaskTests.swift */,
 				F8A545D91A8F350200D59617 /* Supporting Files */,
 			);
 			path = CayenaTests;
@@ -209,6 +219,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8A545E61A8F354D00D59617 /* Cayena.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,7 +227,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8A545DC1A8F350200D59617 /* CayenaTests.swift in Sources */,
+				F8A545ED1A8F355A00D59617 /* TaskTests.swift in Sources */,
+				F8A545EC1A8F355A00D59617 /* ParametersEncodingTests.swift in Sources */,
+				F8A545E71A8F355100D59617 /* Cayena.swift in Sources */,
+				F8A545EB1A8F355A00D59617 /* ManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -397,6 +411,7 @@
 				F8A545E11A8F350200D59617 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F8A545E21A8F350200D59617 /* Build configuration list for PBXNativeTarget "CayenaTests" */ = {
 			isa = XCConfigurationList;
@@ -405,6 +420,7 @@
 				F8A545E41A8F350200D59617 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
