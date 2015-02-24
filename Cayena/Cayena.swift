@@ -13,7 +13,7 @@ import Foundation
 public let CayenaErrorDomain = "com.cayena.error"
 
 /*
-    HTTP supported methods
+HTTP supported methods
 */
 
 public enum HTTPMethod: String {
@@ -26,6 +26,17 @@ public enum HTTPMethod: String {
 
 
 // MARK: Protocols
+
+public protocol Router {
+    var baseURL: String { get }
+    var encoding: ParametersEncoding { get }
+    var headers: [String: String]? { get }
+    var method: HTTPMethod { get }
+    var parameters: [String: AnyObject]? { get }
+    var path: String { get }
+    var response: NSData -> (AnyObject?, NSError?) { get }
+    var URL: String { get }
+}
 
 public protocol URLRequestProtocol {
     var URLRequest: NSURLRequest { get }
@@ -62,12 +73,12 @@ public enum ParametersEncoding {
     case URL
     
     /**
-        Creates a URL request by encoding parameters and applying them onto an existing request.
+    Creates a URL request by encoding parameters and applying them onto an existing request.
     
-        :param: URLRequest The request to have parameters applied
-        :param: parameters The parameters to apply
+    :param: URLRequest The request to have parameters applied
+    :param: parameters The parameters to apply
     
-        :returns: A tuple containing the constructed request and the error that occurred during parameter encoding, if any.
+    :returns: A tuple containing the constructed request and the error that occurred during parameter encoding, if any.
     */
     
     public func encode(request: URLRequestProtocol, parameters: [String: AnyObject]?) -> (NSURLRequest, NSError?) {
@@ -191,12 +202,12 @@ public class Manager {
     // MARK: Instance methods
     
     /**
-        Creates a task for downloading from the resume data produced from a previous request cancellation.
+    Creates a task for downloading from the resume data produced from a previous request cancellation.
     
-        :param: data The resume data
-        :param: destination The closure used to determine the destination of the downloaded file.
+    :param: data The resume data
+    :param: destination The closure used to determine the destination of the downloaded file.
     
-        :returns: The created download task.
+    :returns: The created download task.
     */
     
     public func download(data: NSData, destination: Task.DownloadDestination) -> Task {
@@ -204,12 +215,12 @@ public class Manager {
     }
     
     /**
-        Creates a task for downloading from the specified request.
+    Creates a task for downloading from the specified request.
     
-        :param: request The request
-        :param: destination The closure used to determine the destination of the downloaded file.
+    :param: request The request
+    :param: destination The closure used to determine the destination of the downloaded file.
     
-        :returns: The created download task.
+    :returns: The created download task.
     */
     
     public func download(request: URLRequestProtocol, destination: Task.DownloadDestination) -> Task {
@@ -217,28 +228,29 @@ public class Manager {
     }
     
     /**
-        Creates a task for the specified parameters.
+    Creates a task for the specified parameters.
     
-        :param: method The HTTP method.
-        :param: URL The URL string.
-        :param: parameters The parameters. `nil` by default.
-        :param: parametersEncoding The parameter encoding. `.URL` by default.
+    :param: method The HTTP method.
+    :param: URL The URL string.
+    :param: parameters The parameters. `nil` by default.
+    :param: parametersEncoding The parameter encoding. `.URL` by default.
     
-        :returns: The created task.
+    :returns: The created task.
     */
     
     public func task(method: HTTPMethod, URL: String, parameters: [String: AnyObject]? = nil, parametersEncoding: ParametersEncoding = .URL) -> Task {
         let mutableRequest = NSMutableURLRequest(URL: NSURL(string: URL)!)
         mutableRequest.HTTPMethod = method.rawValue
+        parametersEncoding.encode(mutableRequest, parameters: parameters)
         return task(mutableRequest)
     }
     
     /**
-        Creates a task for the specified URL request.
+    Creates a task for the specified URL request.
     
-        :param: request The URL request
+    :param: request The URL request
     
-        :returns: The created task.
+    :returns: The created task.
     */
     
     public func task(request: URLRequestProtocol) -> Task {
@@ -406,7 +418,7 @@ extension Manager {
                 [weak self] in
                 delegate = self?.taskDelegates[task.taskIdentifier]
                 
-            })
+                })
             return delegate
         }
         
@@ -461,12 +473,12 @@ public class Task {
     // MARK: Instance methods
     
     /**
-        Associates an HTTP Basic credential with the request.
+    Associates an HTTP Basic credential with the request.
     
-        :param: user The user.
-        :param: password The password.
+    :param: user The user.
+    :param: password The password.
     
-        :returns: The Task.
+    :returns: The Task.
     */
     
     public func authenticate(#user: String, pasword: String) -> Self {
@@ -475,11 +487,11 @@ public class Task {
     }
     
     /**
-        Associates a specified credential with the request.
+    Associates a specified credential with the request.
     
-        :param: credential The credential.
+    :param: credential The credential.
     
-        :returns: The request.
+    :returns: The request.
     */
     
     public func authenticate(#credential: NSURLCredential) -> Self {
@@ -488,7 +500,7 @@ public class Task {
     }
     
     /**
-        Cancels the request.
+    Cancels the request.
     */
     public func cancel() {
         if let downloadTaskDelegate = delegate as? DownloadTaskDelegate {
@@ -501,11 +513,11 @@ public class Task {
     }
     
     /**
-        Sets a closure to be called periodically during the lifecycle of the task.
+    Sets a closure to be called periodically during the lifecycle of the task.
     
-        :param: closure The code to be executed periodically during the lifecycle of the request.
+    :param: closure The code to be executed periodically during the lifecycle of the request.
     
-        :returns: The Task.
+    :returns: The Task.
     */
     public func progress(closure: ((bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) -> Void)? = nil) -> Self {
         if let downloadDelegate = delegate as? DownloadTaskDelegate {
@@ -516,14 +528,14 @@ public class Task {
     }
     
     /**
-        Resumes the request.
+    Resumes the request.
     */
     public func resume() {
         sessionTask.resume()
     }
     
     /**
-        Suspends the request.
+    Suspends the request.
     */
     public func suspend() {
         sessionTask.suspend()
@@ -531,32 +543,32 @@ public class Task {
 }
 
 extension Task {
-
+    
     // MARK: Response
     
     /**
-        Creates return the data response.
+    Creates return the data response.
     
-        :param: completionHandler A closure to be executed once the request has finished.
+    :param: completionHandler A closure to be executed once the request has finished.
     
-        :return a self instance
+    :return a self instance
     
     */
     
     public func response(completionHandler: (NSURLSessionTask, NSURLResponse?, NSData?, NSError?) -> ())  -> Self {
         response({ data in
             return (data, nil)
-        }, completionHandler: completionHandler)
+            }, completionHandler: completionHandler)
         
         return self
     }
     
     /**
-        Creates a JSON response from the response data.
+    Creates a JSON response from the response data.
     
-        :param: completionHandler A closure to be executed once the request has finished.
+    :param: completionHandler A closure to be executed once the request has finished.
     
-        :return a self instance
+    :return a self instance
     
     */
     public func JSONResponse(options: NSJSONReadingOptions = .AllowFragments, completionHandler: (NSURLSessionTask, NSURLResponse?, AnyObject?, NSError?) -> ()) -> Self {
@@ -564,17 +576,17 @@ extension Task {
             var error: NSError?
             let JSONObject: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: options, error: &error)
             return (JSONObject, error)
-        }, completionHandler: completionHandler)
+            }, completionHandler: completionHandler)
         
         return self
     }
     
     /**
-        Creates a Property list response from the response data.
+    Creates a Property list response from the response data.
     
-        :param: completionHandler A closure to be executed once the request has finished.
+    :param: completionHandler A closure to be executed once the request has finished.
     
-        :return a self instance
+    :return a self instance
     
     */
     public func propertyListResponse(options: NSPropertyListReadOptions = 0, completionHandler: (NSURLSessionTask, NSURLResponse?, AnyObject?, NSError?) -> ()) -> Self {
@@ -582,18 +594,18 @@ extension Task {
             var error: NSError?
             let propertyListObject: AnyObject? = NSPropertyListSerialization.propertyListWithData(data, options: options, format: nil, error: &error)
             return (propertyListObject, error)
-        }, completionHandler: completionHandler)
+            }, completionHandler: completionHandler)
         
         return self
     }
     
     /**
-        Creates a custom response from the response data.
+    Creates a custom response from the response data.
     
-        :param: f A function that takes the response data a return a generic value.
-        :param: completionHandler A closure to be executed once the request has finished.
+    :param: f A function that takes the response data a return a generic value.
+    :param: completionHandler A closure to be executed once the request has finished.
     
-        :return a self instance
+    :return a self instance
     
     */
     
@@ -604,6 +616,7 @@ extension Task {
                 if let data = self.delegate.data {
                     (responseObject, error) = f(data)
                 }
+                
                 completionHandler(self.delegate.sessionTask, self.delegate.sessionTask.response, responseObject, error)
             })
         })
@@ -612,17 +625,17 @@ extension Task {
     }
     
     /**
-        Creates a string response from the response data.
+    Creates a string response from the response data.
     
-        :param: completionHandler A closure to be executed once the request has finished.
+    :param: completionHandler A closure to be executed once the request has finished.
     
-        :return a self instance
+    :return a self instance
     
     */
     public func stringResponse(encoding: NSStringEncoding = NSUTF8StringEncoding, completionHandler: (NSURLSessionTask, NSURLResponse?, String?, NSError?) -> ()) -> Self {
         response({ data in
             return (NSString(data: data, encoding: encoding) as? String, nil)
-        }, completionHandler: completionHandler)
+            }, completionHandler: completionHandler)
         
         return self
     }
@@ -656,7 +669,7 @@ extension Task {
                 let queue = dispatch_queue_create("com.cayena.task.\(task.taskIdentifier)", DISPATCH_QUEUE_CONCURRENT)
                 dispatch_suspend(queue)
                 return queue
-            }()
+                }()
         }
         
         // MARK: NSURLSessionTaskDelegate
@@ -803,4 +816,15 @@ extension Task {
             uploadProgress?(bytesSent: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
         }
     }
+}
+
+// MARK: Convenience
+
+extension Manager {
+    
+    func task(router: Router, completionHandler: (NSURLSessionTask, NSURLResponse?, AnyObject?, NSError?) -> Void) -> Task {
+        session.configuration.HTTPAdditionalHeaders = router.headers
+        return task(router.method, URL: router.URL, parameters: router.parameters, parametersEncoding: router.encoding).response(router.response, completionHandler: completionHandler)
+    }
+    
 }
