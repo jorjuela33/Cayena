@@ -13,7 +13,7 @@ import Foundation
 public let CayenaErrorDomain = "com.cayena.error"
 
 /*
-HTTP supported methods
+    HTTP supported methods
 */
 
 public enum HTTPMethod: String {
@@ -53,32 +53,32 @@ extension NSURLRequest: URLRequestProtocol {
 public enum ParametersEncoding {
     
     /**
-    Uses the associated closure value to construct a new request.
+        Uses the associated closure value to construct a new request.
     */
     case Custom ((URLRequestProtocol, [String: AnyObject]?) -> (NSURLRequest, NSError?))
     
     /**
-    Create a JSON representation of the parameters object, which is set as the body of the request. The `Content-Type` HTTP header field of an encoded request is set to `application/json`.
+        Create a JSON representation of the parameters object, which is set as the body of the request. The `Content-Type` HTTP header field of an encoded request is set to `application/json`.
     */
     case JSON
     
     /**
-    Create a plist representation of the parameters object which is set as the body of the request. The `Content-Type` HTTP header field of an encoded request is set to `application/x-plist`.
+        Create a plist representation of the parameters object which is set as the body of the request. The `Content-Type` HTTP header field of an encoded request is set to `application/x-plist`.
     */
     case PropertyList(NSPropertyListFormat, NSPropertyListWriteOptions)
     
     /**
-    A query string to be set as or appended to any existing URL query for `GET`, `HEAD`, and `DELETE` requests, or set as the body for requests with any other HTTP method. The `Content-Type` HTTP header field of an encoded request with HTTP body is set to `application/x-www-form-urlencoded`.
+        A query string to be set as or appended to any existing URL query for `GET`, `HEAD`, and `DELETE` requests, or set as the body for requests with any other HTTP method. The `Content-Type` HTTP header field of an encoded request with HTTP body is set to `application/x-www-form-urlencoded`.
     */
     case URL
     
     /**
-    Creates a URL request by encoding parameters and applying them onto an existing request.
+        Creates a URL request by encoding parameters and applying them onto an existing request.
     
-    :param: URLRequest The request to have parameters applied
-    :param: parameters The parameters to apply
+        :param: URLRequest The request to have parameters applied
+        :param: parameters The parameters to apply
     
-    :returns: A tuple containing the constructed request and the error that occurred during parameter encoding, if any.
+        :returns: A tuple containing the constructed request and the error that occurred during parameter encoding, if any.
     */
     
     public func encode(request: URLRequestProtocol, parameters: [String: AnyObject]?) -> (NSURLRequest, NSError?) {
@@ -166,7 +166,7 @@ public enum ParametersEncoding {
 // MARK: Manager
 
 /**
-Responsible for creating and managing `Request` objects, as well as their underlying `NSURLSession`.
+    Responsible for creating and managing `Request` objects, as well as their underlying `NSURLSession`.
 */
 
 public class Manager {
@@ -202,12 +202,12 @@ public class Manager {
     // MARK: Instance methods
     
     /**
-    Creates a task for downloading from the resume data produced from a previous request cancellation.
+        Creates a task for downloading from the resume data produced from a previous request cancellation.
     
-    :param: data The resume data
-    :param: destination The closure used to determine the destination of the downloaded file.
+        :param: data The resume data
+        :param: destination The closure used to determine the destination of the downloaded file.
     
-    :returns: The created download task.
+        :returns: The created download task.
     */
     
     public func download(data: NSData, destination: Task.DownloadDestination) -> Task {
@@ -215,12 +215,12 @@ public class Manager {
     }
     
     /**
-    Creates a task for downloading from the specified request.
+        Creates a task for downloading from the specified request.
     
-    :param: request The request
-    :param: destination The closure used to determine the destination of the downloaded file.
+        :param: request The request
+        :param: destination The closure used to determine the destination of the downloaded file.
     
-    :returns: The created download task.
+        :returns: The created download task.
     */
     
     public func download(request: URLRequestProtocol, destination: Task.DownloadDestination) -> Task {
@@ -228,29 +228,29 @@ public class Manager {
     }
     
     /**
-    Creates a task for the specified parameters.
+        Creates a task for the specified parameters.
     
-    :param: method The HTTP method.
-    :param: URL The URL string.
-    :param: parameters The parameters. `nil` by default.
-    :param: parametersEncoding The parameter encoding. `.URL` by default.
+        :param: method The HTTP method.
+        :param: URL The URL string.
+        :param: parameters The parameters. `nil` by default.
+        :param: parametersEncoding The parameter encoding. `.URL` by default.
     
-    :returns: The created task.
+        :returns: The created task.
     */
     
     public func task(method: HTTPMethod, URL: String, parameters: [String: AnyObject]? = nil, parametersEncoding: ParametersEncoding = .URL) -> Task {
         let mutableRequest = NSMutableURLRequest(URL: NSURL(string: URL)!)
         mutableRequest.HTTPMethod = method.rawValue
-        parametersEncoding.encode(mutableRequest, parameters: parameters)
-        return task(mutableRequest)
+        let (request, error) = parametersEncoding.encode(mutableRequest, parameters: parameters)
+        return task(request)
     }
     
     /**
-    Creates a task for the specified URL request.
+        Creates a task for the specified URL request.
     
-    :param: request The URL request
+        :param: request The URL request
     
-    :returns: The created task.
+        :returns: The created task.
     */
     
     public func task(request: URLRequestProtocol) -> Task {
@@ -258,7 +258,7 @@ public class Manager {
         dispatch_sync(queue, {
             [weak self] in
             dataTask = self?.session.dataTaskWithRequest(request.URLRequest)
-        })
+            })
         
         let task = Task(session: session, task: dataTask!)
         sessionDelegate.taskDelegates[dataTask!.taskIdentifier] = task.delegate
@@ -300,7 +300,7 @@ extension Manager {
     // MARK: SessionDelegate
     
     /**
-    Responsible for the session delegates.
+        Responsible for the session delegates.
     */
     
     class SessionDelegate: NSObject, NSURLSessionDataDelegate, NSURLSessionDownloadDelegate, NSURLSessionDelegate, NSURLSessionTaskDelegate {
@@ -431,7 +431,7 @@ extension Manager {
 // MARK: Task
 
 /**
-Responsible for start the task and receiving the response.
+    Responsible for start the task and receiving the response.
 */
 
 public class Task {
@@ -445,6 +445,11 @@ public class Task {
     }
     
     public let session: NSURLSession
+    
+    //  The identifier for the task
+    public var identifier: Int {
+        return delegate.sessionTask.taskIdentifier
+    }
     
     //  The current progress of the task
     public var progress: NSProgress {
@@ -473,12 +478,12 @@ public class Task {
     // MARK: Instance methods
     
     /**
-    Associates an HTTP Basic credential with the request.
+        Associates an HTTP Basic credential with the request.
     
-    :param: user The user.
-    :param: password The password.
+        :param: user The user.
+        :param: password The password.
     
-    :returns: The Task.
+        :returns: The Task.
     */
     
     public func authenticate(#user: String, pasword: String) -> Self {
@@ -487,11 +492,11 @@ public class Task {
     }
     
     /**
-    Associates a specified credential with the request.
+        Associates a specified credential with the request.
     
-    :param: credential The credential.
+        :param: credential The credential.
     
-    :returns: The request.
+        :returns: The request.
     */
     
     public func authenticate(#credential: NSURLCredential) -> Self {
@@ -500,7 +505,7 @@ public class Task {
     }
     
     /**
-    Cancels the request.
+        Cancels the request.
     */
     public func cancel() {
         if let downloadTaskDelegate = delegate as? DownloadTaskDelegate {
@@ -513,11 +518,11 @@ public class Task {
     }
     
     /**
-    Sets a closure to be called periodically during the lifecycle of the task.
+        Sets a closure to be called periodically during the lifecycle of the task.
     
-    :param: closure The code to be executed periodically during the lifecycle of the request.
+        :param: closure The code to be executed periodically during the lifecycle of the request.
     
-    :returns: The Task.
+        :returns: The Task.
     */
     public func progress(closure: ((bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) -> Void)? = nil) -> Self {
         if let downloadDelegate = delegate as? DownloadTaskDelegate {
@@ -528,14 +533,14 @@ public class Task {
     }
     
     /**
-    Resumes the request.
+        Resumes the request.
     */
     public func resume() {
         sessionTask.resume()
     }
     
     /**
-    Suspends the request.
+        Suspends the request.
     */
     public func suspend() {
         sessionTask.suspend()
@@ -547,11 +552,11 @@ extension Task {
     // MARK: Response
     
     /**
-    Creates return the data response.
+        Creates return the data response.
     
-    :param: completionHandler A closure to be executed once the request has finished.
+        :param: completionHandler A closure to be executed once the request has finished.
     
-    :return a self instance
+        :return a self instance
     
     */
     
@@ -564,11 +569,11 @@ extension Task {
     }
     
     /**
-    Creates a JSON response from the response data.
+        Creates a JSON response from the response data.
     
-    :param: completionHandler A closure to be executed once the request has finished.
+        :param: completionHandler A closure to be executed once the request has finished.
     
-    :return a self instance
+        :return a self instance
     
     */
     public func JSONResponse(options: NSJSONReadingOptions = .AllowFragments, completionHandler: (NSURLSessionTask, NSURLResponse?, AnyObject?, NSError?) -> ()) -> Self {
@@ -582,11 +587,11 @@ extension Task {
     }
     
     /**
-    Creates a Property list response from the response data.
+        Creates a Property list response from the response data.
     
-    :param: completionHandler A closure to be executed once the request has finished.
+        :param: completionHandler A closure to be executed once the request has finished.
     
-    :return a self instance
+        :return a self instance
     
     */
     public func propertyListResponse(options: NSPropertyListReadOptions = 0, completionHandler: (NSURLSessionTask, NSURLResponse?, AnyObject?, NSError?) -> ()) -> Self {
@@ -600,12 +605,12 @@ extension Task {
     }
     
     /**
-    Creates a custom response from the response data.
+        Creates a custom response from the response data.
     
-    :param: f A function that takes the response data a return a generic value.
-    :param: completionHandler A closure to be executed once the request has finished.
+        :param: f A function that takes the response data a return a generic value.
+        :param: completionHandler A closure to be executed once the request has finished.
     
-    :return a self instance
+        :return a self instance
     
     */
     
@@ -625,11 +630,11 @@ extension Task {
     }
     
     /**
-    Creates a string response from the response data.
+        Creates a string response from the response data.
     
-    :param: completionHandler A closure to be executed once the request has finished.
+        :param: completionHandler A closure to be executed once the request has finished.
     
-    :return a self instance
+        :return a self instance
     
     */
     public func stringResponse(encoding: NSStringEncoding = NSUTF8StringEncoding, completionHandler: (NSURLSessionTask, NSURLResponse?, String?, NSError?) -> ()) -> Self {
